@@ -16,10 +16,9 @@
 <section class="hero">
   <div class="container">
     <div class="hero-content">
-      <div class="hero-badge">AI-Powered Guardian</div>
-      <h1>Your AI-Powered Guardian Companion</h1>
+      <div class="hero-badge">Privacy first Smart AI agent</div>
+      <h1>Your AI Guardian, situational aware.</h1>
       <p class="subtitle">
-        Imagine a world where your phone isn't just smart — it's <em>aware</em>.
         Elys helps you navigate everyday life with more peace of mind, less stress,
         and a sense that someone's quietly looking out for you.
       </p>
@@ -40,7 +39,6 @@
     
     <div class="embedded-chat">
       <div class="chat-connector"></div>
-      <div class="chat-badge">Try Elys Now</div>
       <Chat embedded={true} />
     </div>
   </div>
@@ -151,19 +149,6 @@
     top: -4px;
   }
   
-  .chat-badge {
-    position: absolute;
-    top: 10px;
-    right: 20px;
-    background: linear-gradient(135deg, #4361ee 0%, #3a56d4 100%);
-    color: white;
-    padding: 0.4rem 1rem;
-    border-radius: 20px;
-    font-size: 0.8rem;
-    font-weight: 600;
-    z-index: 10;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  }
   
   h1 {
     font-size: 3.5rem;
