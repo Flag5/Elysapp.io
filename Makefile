@@ -9,13 +9,12 @@ dev:
 	npm run dev
 
 # Build for production
-build:
+build: clean
 	npm run build
 
-# Deploy to GitHub Pages
+# Build for deployment
 deploy: build
-	@echo "Deploying to GitHub Pages..."
-	npx gh-pages -d dist
+	@echo "Project built in dist/ directory"
 
 # Clean build artifacts
 clean:
