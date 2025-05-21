@@ -15,10 +15,7 @@ build:
 # Deploy to GitHub Pages
 deploy: build
 	@echo "Deploying to GitHub Pages..."
-	# Add GitHub Pages deployment commands here
-	# For example:
-	# cp -r dist/* ../username.github.io/
-	# cd ../username.github.io && git add . && git commit -m "Update website" && git push
+	npx gh-pages -d dist
 
 # Clean build artifacts
 clean:
