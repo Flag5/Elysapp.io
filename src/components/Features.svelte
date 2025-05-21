@@ -50,6 +50,27 @@
         <h3>Location Intelligence</h3>
         <p>"You're at the airport. Your suitcase beacon hasn't moved." If paired with smart tags, it can alert you when something's left behind or misplaced.</p>
       </div>
+      
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9z"></path>
+          </svg>
+        </div>
+        <h3>Weather Adaptation</h3>
+        <p>"Rain expected during your commute - leave 15 minutes early!" Elys factors in weather forecasts to adjust your routines proactively.</p>
+      </div>
+      
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8"></path>
+            <path d="M21 3v5h-5"></path>
+          </svg>
+        </div>
+        <h3>Routine Optimization</h3>
+        <p>"Your Tuesday gym visits average 45 mins - schedule buffer time!" Learns from your habits to suggest smarter time allocations.</p>
+      </div>
     </div>
     
     <div class="features-highlight">
@@ -88,7 +109,7 @@
   
   .features-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    grid-template-columns: repeat(3, 1fr);
     gap: 2rem;
     margin-bottom: 4rem;
   }
@@ -154,9 +175,15 @@
   }
   
   @media (max-width: 768px) {
+  .features-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  @media (max-width: 1024px) {
     .features-grid {
-      grid-template-columns: 1fr;
+      grid-template-columns: repeat(2, 1fr);
     }
+  }
     
     .features-highlight {
       padding: 2rem;
