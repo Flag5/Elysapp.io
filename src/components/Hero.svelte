@@ -64,6 +64,8 @@
     align-items: center;
     justify-content: space-between;
     gap: 2rem;
+    position: relative;
+    z-index: 5;
   }
   
   .hero-content {
@@ -217,12 +219,7 @@
     pointer-events: none;
   }
   
-  .container {
-    position: relative;
-    z-index: 5;
-  }
-  
-  .hero-content, .hero-image {
+  .hero-content {
     position: relative;
     z-index: 5;
   }

@@ -1,5 +1,5 @@
 <script>
-  import { onMount } from 'svelte';
+  import { onMount, onDestroy } from 'svelte';
   import Header from './components/Header.svelte';
   import Hero from './components/Hero.svelte';
   import Features from './components/Features.svelte';
@@ -7,6 +7,15 @@
   import Security from './components/Security.svelte';
   import Footer from './components/Footer.svelte';
   import Chat from './components/Chat.svelte';
+  import { initAuthStore, destroyAuthStore } from './stores/auth.js';
+
+  onMount(() => {
+    initAuthStore();
+  });
+
+  onDestroy(() => {
+    destroyAuthStore();
+  });
 </script>
 
 <main>
