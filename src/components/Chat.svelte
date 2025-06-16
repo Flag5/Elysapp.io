@@ -1,5 +1,6 @@
 <script>
   import { onMount, onDestroy } from 'svelte';
+  import { backendUser } from '../stores/auth.js';
   
   export let embedded = false;
   
@@ -7,13 +8,72 @@
   let userInput = '';
   let chatContainer;
   let isLoading = false;
+  let currentUser = null;
+  
+  // Subscribe to user store
+  const unsubscribeUser = backendUser.subscribe(user => {
+    currentUser = user;
+    // Update welcome message when user changes
+    if (user) {
+      updateWelcomeMessage();
+    }
+  });
+  
+  function updateWelcomeMessage() {
+    if (!currentUser) return;
+    
+    const welcomeMessage = getPersonalizedWelcomeMessage();
+    
+    // Update the first message if it exists, otherwise add it
+    if (chatMessages.length > 0 && chatMessages[0].sender === 'elys') {
+      chatMessages[0] = {
+        sender: 'elys',
+        text: welcomeMessage
+      };
+      chatMessages = [...chatMessages]; // Trigger reactivity
+    } else {
+      chatMessages = [
+        {
+          sender: 'elys',
+          text: welcomeMessage
+        },
+        ...chatMessages
+      ];
+    }
+  }
+  
+  function getPersonalizedWelcomeMessage() {
+    if (!currentUser) {
+      return 'Hello! I\'m Elys, what can I do for you?';
+    }
+    
+    const firstName = currentUser.display_name ? currentUser.display_name.split(' ')[0] : 'there';
+    
+    // Check if user is new (created recently and no previous login)
+    const createdAt = new Date(currentUser.created_at);
+    const lastLogin = currentUser.last_login ? new Date(currentUser.last_login) : null;
+    const now = new Date();
+    
+    // Consider user "new" if:
+    // 1. No last_login recorded, OR
+    // 2. Created within the last 5 minutes and last_login is very close to created_at
+    const isNewUser = !lastLogin ||
+      (now - createdAt < 5 * 60 * 1000 && lastLogin && Math.abs(lastLogin - createdAt) < 2 * 60 * 1000);
+    
+    if (isNewUser) {
+      return `Welcome to Elys, ${firstName}! I'm excited to help you get started. What can I do for you?`;
+    } else {
+      return `Hi ${firstName}, nice to see you again! What can I help you with today?`;
+    }
+  }
   
   onMount(() => {
-    // Add a welcome message
+    // Add initial welcome message
+    const welcomeMessage = currentUser ? getPersonalizedWelcomeMessage() : 'Hello! I\'m Elys, what can I do for you?';
     chatMessages = [
       {
         sender: 'elys',
-        text: 'Hello! I\'m Elys, what can I do for you?'
+        text: welcomeMessage
       }
     ];
     
@@ -33,6 +93,8 @@
     if (!embedded) {
       document.removeEventListener('keydown', handleKeyDown);
     }
+    // Unsubscribe from user store
+    unsubscribeUser();
   });
   
   function handleKeyDown(event) {

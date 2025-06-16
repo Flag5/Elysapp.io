@@ -7,6 +7,9 @@ import {
   onAuthStateChanged
 } from "firebase/auth";
 import { firebaseConfig } from "./firebase-config.js";
+import { createLogger } from "./logger.js";
+
+const logger = createLogger('Firebase');
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
@@ -19,10 +22,24 @@ googleProvider.addScope('profile');
 
 export async function signInWithGoogle() {
   try {
+    logger.emoji('🔑', 'Starting Google sign-in...');
     const result = await signInWithPopup(auth, googleProvider);
+    logger.emoji('✅', 'Google sign-in successful:', {
+      uid: result.user.uid,
+      email: result.user.email,
+      displayName: result.user.displayName,
+      emailVerified: result.user.emailVerified,
+      photoURL: result.user.photoURL
+    });
+    logger.emoji('🔥', 'Firebase auth state should now trigger backend sync...');
     return result.user;
   } catch (error) {
-    console.error("Google sign-in error:", error);
+    logger.error("❌ Google sign-in error:", error);
+    logger.debug("❌ Error details:", {
+      code: error.code,
+      message: error.message,
+      stack: error.stack
+    });
     throw error;
   }
 }
@@ -31,7 +48,7 @@ export async function logout() {
   try {
     await signOut(auth);
   } catch (error) {
-    console.error("Logout error:", error);
+    logger.error("Logout error:", error);
     throw error;
   }
 }

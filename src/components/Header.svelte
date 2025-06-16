@@ -10,12 +10,14 @@
 
   async function handleGoogleSignIn() {
     try {
+      console.log('🔘 Login button clicked');
       await signInWithGoogle();
     } catch (error) {
       console.error('Sign in failed:', error);
       alert('Sign in failed. Please try again.');
     }
   }
+
 
   async function handleLogout() {
     try {
@@ -135,6 +137,7 @@
     color: #666;
     font-size: 0.9rem;
   }
+
 
   .google-login-btn {
     display: flex;
