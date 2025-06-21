@@ -7,6 +7,7 @@
   import Security from './components/Security.svelte';
   import Footer from './components/Footer.svelte';
   import Chat from './components/Chat.svelte';
+  import ToastContainer from './components/ToastContainer.svelte';
   import { initAuthStore, destroyAuthStore } from './stores/auth.js';
 
   onMount(() => {
@@ -26,6 +27,8 @@
   <Security />
   <Footer />
 </main>
+
+<ToastContainer />
 
 <style>
   :global(body) {

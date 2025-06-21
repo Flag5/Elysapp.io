@@ -1,6 +1,9 @@
 <script>
   import { onMount, onDestroy } from 'svelte';
   import { backendUser } from '../stores/auth.js';
+  import { userService } from '../lib/api.js';
+  import { joinBetaTest } from '../lib/betaTest.js';
+  import { userPreferences, loadUserPreferences } from '../stores/preferences.js';
   
   export let embedded = false;
   
@@ -9,11 +12,14 @@
   let chatContainer;
   let isLoading = false;
   let currentUser = null;
+  let isDevelopmentMode = false;
+  let isWaitingForBetaResponse = false;
   
   // Subscribe to user store
-  const unsubscribeUser = backendUser.subscribe(user => {
+  const unsubscribeUser = backendUser.subscribe(async user => {
     currentUser = user;
-    // Update welcome message when user changes
+    // Load user preferences when user changes
+    await loadUserPreferences(user);
     if (user) {
       updateWelcomeMessage();
     }
@@ -67,7 +73,12 @@
     }
   }
   
-  onMount(() => {
+  onMount(async () => {
+    // Load user preferences if user is already logged in
+    if (currentUser) {
+      await loadUserPreferences();
+    }
+    
     // Add initial welcome message
     const welcomeMessage = currentUser ? getPersonalizedWelcomeMessage() : 'Hello! I\'m Elys, what can I do for you?';
     chatMessages = [
@@ -115,6 +126,13 @@
   
   async function sendMessage() {
     if (!userInput.trim()) return;
+    
+    // Check if we're waiting for a beta response
+    if (isWaitingForBetaResponse) {
+      await handleBetaResponse(userInput.trim());
+      userInput = '';
+      return;
+    }
     
     // Add user message to chat
     chatMessages = [
@@ -165,15 +183,7 @@
       ];
     } catch (error) {
       console.error('Error sending message:', error);
-      
-      // Add error message
-      chatMessages = [
-        ...chatMessages,
-        {
-          sender: 'elys',
-          text: 'I\'m sorry, there was an error processing your request. Please try again later.'
-        }
-      ];
+      await handleBackendUnavailable();
     } finally {
       isLoading = false;
       
@@ -184,6 +194,148 @@
         }
       }, 0);
     }
+  }
+  
+  async function handleBackendUnavailable() {
+    isDevelopmentMode = true;
+    
+    // Show 5-second loading state with development message
+    chatMessages = [
+      ...chatMessages,
+      {
+        sender: 'elys',
+        text: '🔧 We\'re currently developing Elys, now working on the backend. The service is temporarily offline while we make improvements... Sorry!'
+      }
+    ];
+    
+    // Scroll to bottom
+    setTimeout(() => {
+      if (chatContainer) {
+        chatContainer.scrollTop = chatContainer.scrollHeight;
+      }
+    }, 0);
+    
+    // Wait 5 seconds
+    await new Promise(resolve => setTimeout(resolve, 5000));
+    
+    // Check user status and show appropriate message
+    if (!currentUser) {
+      showLoginPrompt();
+    } else {
+      await checkBetaTestStatus();
+    }
+  }
+  
+  function showLoginPrompt() {
+    chatMessages = [
+      ...chatMessages,
+      {
+        sender: 'elys',
+        text: 'To get early access to new features and join our beta testing program, please log in to your account.\n\nAfter logging in, click on your name in the top-right corner and select "Join Beta Program" from the dropdown menu.\n\nBeta testers get free access to new features before they\'re publicly released!'
+      }
+    ];
+    
+    scrollToBottom();
+  }
+  
+  async function checkBetaTestStatus() {
+    const hasBetaTest = $userPreferences?.betatest === true;
+    
+    if (hasBetaTest) {
+      showBetaUserMessage();
+    } else {
+      showWaitlistOffer();
+    }
+  }
+  
+  function showBetaUserMessage() {
+    const userEmail = currentUser?.email || 'your registered email';
+    
+    chatMessages = [
+      ...chatMessages,
+      {
+        sender: 'elys',
+        text: `Great news! You're already signed up for our beta program. We'll notify you at <strong>${userEmail}</strong> as soon as this feature is ready for testing.`
+      }
+    ];
+    
+    scrollToBottom();
+  }
+  
+  function showWaitlistOffer() {
+    chatMessages = [
+      ...chatMessages,
+      {
+        sender: 'elys',
+        text: 'Would you like to join our waiting list for early access to this feature? You\'ll get the beta user experience for free and be among the first to try new features!\n\nWrite <strong>"yes"</strong> to join the waiting list.'
+      }
+    ];
+    
+    isWaitingForBetaResponse = true;
+    scrollToBottom();
+  }
+  
+  async function handleBetaResponse(response) {
+    isWaitingForBetaResponse = false;
+    
+    // Add user response to chat
+    chatMessages = [
+      ...chatMessages,
+      {
+        sender: 'user',
+        text: response
+      }
+    ];
+    
+    if (response.toLowerCase() === 'yes') {
+      await joinBetaWaitlist();
+    } else {
+      chatMessages = [
+        ...chatMessages,
+        {
+          sender: 'elys',
+          text: 'No problem! You can always join the beta program later. Is there anything else I can help you with?'
+        }
+      ];
+    }
+    
+    scrollToBottom();
+  }
+  
+  async function joinBetaWaitlist() {
+    try {
+      const updatedPrefs = await joinBetaTest(currentUser, $userPreferences);
+      userPreferences.set(updatedPrefs);
+      
+      const userEmail = currentUser?.email || 'your registered email';
+      
+      chatMessages = [
+        ...chatMessages,
+        {
+          sender: 'elys',
+          text: `🎉 Welcome to the beta program! You've been added to our waiting list and will receive notifications at <strong>${userEmail}</strong> when new features are ready for testing. Thank you for helping us improve the platform!`
+        }
+      ];
+      
+    } catch (error) {
+      console.error('Error joining beta waitlist:', error);
+      
+      chatMessages = [
+        ...chatMessages,
+        {
+          sender: 'elys',
+          text: 'I\'m sorry, there was an error adding you to the beta program. Please try again later or contact support if the issue persists.'
+        }
+      ];
+    }
+  }
+  
+  function scrollToBottom() {
+    setTimeout(() => {
+      if (chatContainer) {
+        chatContainer.scrollTop = chatContainer.scrollHeight;
+      }
+    }, 0);
   }
   
   function handleKeyPress(event) {
@@ -207,7 +359,7 @@
       {#each chatMessages as message}
         <div class="message {message.sender}">
           <div class="message-content">
-            {message.text}
+            {@html message.text}
           </div>
         </div>
       {/each}
@@ -226,9 +378,10 @@
     <div class="chat-input">
       <input
         type="text"
-        placeholder="Type your message..."
+        placeholder={isWaitingForBetaResponse ? 'Write "yes" to join the beta waitlist...' : 'Type your message...'}
         bind:value={userInput}
         on:keypress={handleKeyPress}
+        class:beta-response={isWaitingForBetaResponse}
       />
       <button class="send-button" on:click={sendMessage} disabled={!userInput.trim() || isLoading}>
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -258,7 +411,7 @@
         {#each chatMessages as message}
           <div class="message {message.sender}">
             <div class="message-content">
-              {message.text}
+              {@html message.text}
             </div>
           </div>
         {/each}
@@ -277,9 +430,10 @@
       <div class="chat-input">
         <input
           type="text"
-          placeholder="Type your message..."
+          placeholder={isWaitingForBetaResponse ? 'Write "yes" to join the beta waitlist...' : 'Type your message...'}
           bind:value={userInput}
           on:keypress={handleKeyPress}
+          class:beta-response={isWaitingForBetaResponse}
         />
         <button class="send-button" on:click={sendMessage} disabled={!userInput.trim() || isLoading}>
           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -311,7 +465,7 @@
     background-color: white;
     border-radius: 8px;
     width: 100%;
-    max-width: 500px;
+    max-width: 600px;
     height: 600px;
     max-height: 90vh;
     display: flex;
@@ -450,6 +604,19 @@
     background-color: #f1f1f1;
     color: #333;
     border-bottom-left-radius: 4px;
+    white-space: pre-line;
+  }
+  
+  .elys .message-content:has-text("🔧") {
+    background-color: #fff3cd;
+    border-left: 3px solid #ffc107;
+    color: #856404;
+  }
+  
+  .elys .message-content:has-text("🎉") {
+    background-color: #d1edff;
+    border-left: 3px solid #0084ff;
+    color: #004085;
   }
   
   .loading {
@@ -506,6 +673,16 @@
   
   .chat-input input:focus {
     border-color: #4361ee;
+  }
+  
+  .chat-input input.beta-response {
+    border-color: #ff6b35;
+    background-color: #fff8f5;
+  }
+  
+  .chat-input input.beta-response:focus {
+    border-color: #ff6b35;
+    box-shadow: 0 0 0 2px rgba(255, 107, 53, 0.2);
   }
   
   .send-button {

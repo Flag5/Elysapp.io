@@ -88,7 +88,7 @@
   
   .embedded-chat {
     flex: 1;
-    max-width: 400px;
+    max-width: 480px;
     height: 450px;
     background-color: rgba(255, 255, 255, 0.95);
     border-radius: 16px;

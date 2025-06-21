@@ -1,8 +1,21 @@
 <script>
-  import { user, loading } from '../stores/auth.js';
+  import { onDestroy } from 'svelte';
+  import { user, loading, backendUser } from '../stores/auth.js';
   import { signInWithGoogle, logout } from '../lib/auth.js';
+  import { userService } from '../lib/api.js';
+  import { joinBetaTest, leaveBetaTest } from '../lib/betaTest.js';
+  import { addToast } from '../stores/toast.js';
+  import { userPreferences, loadUserPreferences } from '../stores/preferences.js';
   
   let scrolled = false;
+  let showUserMenu = false;
+  let currentUser = null;
+  
+  // Subscribe to backend user for preferences
+  const unsubscribeUser = backendUser.subscribe(async user => {
+    currentUser = user;
+    await loadUserPreferences(user);
+  });
   
   function handleScroll() {
     scrolled = window.scrollY > 20;
@@ -18,17 +31,65 @@
     }
   }
 
-
   async function handleLogout() {
     try {
       await logout();
+      showUserMenu = false;
     } catch (error) {
       console.error('Logout failed:', error);
     }
   }
+  
+  function toggleUserMenu() {
+    showUserMenu = !showUserMenu;
+  }
+  
+  function closeUserMenu() {
+    showUserMenu = false;
+  }
+  
+  async function handleJoinBetaTest() {
+    if (!currentUser) return;
+    
+    try {
+      const updatedPrefs = await joinBetaTest(currentUser, $userPreferences);
+      userPreferences.set(updatedPrefs);
+      addToast('🎉 Welcome to the beta program! You\'ll receive notifications when new features are ready for testing.', 'success', 5000);
+      closeUserMenu();
+    } catch (error) {
+      console.error('Error joining beta test:', error);
+      addToast('Sorry, there was an error joining the beta program. Please try again later.', 'error');
+    }
+  }
+
+  async function handleLeaveBetaTest() {
+    if (!currentUser) return;
+    
+    try {
+      const updatedPrefs = await leaveBetaTest(currentUser, $userPreferences);
+      userPreferences.set(updatedPrefs);
+      addToast('You have left the beta program. You can rejoin anytime from this menu.', 'info', 5000);
+      closeUserMenu();
+    } catch (error) {
+      console.error('Error leaving beta test:', error);
+      addToast('Sorry, there was an error updating your beta status. Please try again later.', 'error');
+    }
+  }
+
+  // Close menu when clicking outside
+  function handleClickOutside(event) {
+    if (showUserMenu && !event.target.closest('.user-menu-container')) {
+      closeUserMenu();
+    }
+  }
+  
+  // Clean up subscription on component destroy
+  onDestroy(() => {
+    unsubscribeUser();
+  });
 </script>
 
-<svelte:window on:scroll={handleScroll} />
+<svelte:window on:scroll={handleScroll} on:click={handleClickOutside} />
 
 <header class:scrolled>
   <div class="container">
@@ -49,10 +110,72 @@
       {#if $loading}
         <div class="loading">Loading...</div>
       {:else if $user}
-        <div class="user-info">
-          <img src={$user.photoURL} alt="Profile" class="profile-pic" />
-          <span class="user-name">{$user.displayName}</span>
-          <button class="logout-btn" on:click={handleLogout}>Logout</button>
+        <div class="user-menu-container">
+          <button class="user-info" on:click={toggleUserMenu} aria-expanded={showUserMenu} aria-haspopup="true">
+            <img src={$user.photoURL} alt="Profile" class="profile-pic" />
+            <span class="user-name">{$user.displayName}</span>
+            <svg class="dropdown-arrow" class:rotated={showUserMenu} width="12" height="12" viewBox="0 0 12 12">
+              <path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+          
+          {#if showUserMenu}
+            <div class="user-dropdown">
+              <div class="dropdown-header">
+                <img src={$user.photoURL} alt="Profile" class="dropdown-profile-pic" />
+                <div class="dropdown-user-info">
+                  <div class="dropdown-user-name">{$user.displayName}</div>
+                  <div class="dropdown-user-email">{$user.email}</div>
+                </div>
+              </div>
+              
+              <div class="dropdown-divider"></div>
+              
+              <div class="dropdown-menu">
+                {#if $userPreferences?.betatest === true}
+                  <div class="dropdown-item beta-status">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                      <path d="M8 0L10.472 5.528L16 8L10.472 10.472L8 16L5.528 10.472L0 8L5.528 5.528L8 0Z" fill="#4361ee"/>
+                    </svg>
+                    <span>Beta Member</span>
+                  </div>
+                  
+                  <button class="dropdown-item leave-beta" on:click={handleLeaveBetaTest}>
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                      <path d="M8 1a7 7 0 1 0 0 14A7 7 0 0 0 8 1zM5.5 5.5L8 8l2.5-2.5L11 6l-2.5 2.5L11 11l-.5.5L8 9l-2.5 2.5L5 11l2.5-2.5L5 6l.5-.5z" fill="currentColor"/>
+                    </svg>
+                    <span>Leave Beta Program</span>
+                  </button>
+                {:else}
+                  <button class="dropdown-item" on:click={handleJoinBetaTest}>
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                      <path d="M8 0L10.472 5.528L16 8L10.472 10.472L8 16L5.528 10.472L0 8L5.528 5.528L8 0Z" fill="currentColor"/>
+                    </svg>
+                    <span>Join Beta Program</span>
+                  </button>
+                {/if}
+                
+                <button class="dropdown-item" on:click={() => {closeUserMenu(); /* Add profile functionality later */}}>
+                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                    <path d="M8 8C10.2091 8 12 6.20914 12 4C12 1.79086 10.2091 0 8 0C5.79086 0 4 1.79086 4 4C4 6.20914 5.79086 8 8 8Z" fill="currentColor"/>
+                    <path d="M8 10C3.58172 10 0 13.5817 0 18H16C16 13.5817 12.4183 10 8 10Z" fill="currentColor"/>
+                  </svg>
+                  <span>Profile Settings</span>
+                </button>
+                
+                <div class="dropdown-divider"></div>
+                
+                <button class="dropdown-item logout-item" on:click={handleLogout}>
+                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                    <path d="M6 2H2V14H6" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M11 5L14 8L11 11" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M14 8H6" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                  <span>Sign Out</span>
+                </button>
+              </div>
+            </div>
+          {/if}
         </div>
       {:else}
         <button class="google-login-btn" on:click={handleGoogleSignIn}>
@@ -163,10 +286,24 @@
     flex-shrink: 0;
   }
 
+  .user-menu-container {
+    position: relative;
+  }
+
   .user-info {
     display: flex;
     align-items: center;
     gap: 0.75rem;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: 8px;
+    transition: background-color 0.2s ease;
+  }
+  
+  .user-info:hover {
+    background-color: rgba(67, 97, 238, 0.1);
   }
 
   .profile-pic {
@@ -183,6 +320,120 @@
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+  }
+  
+  .dropdown-arrow {
+    color: #666;
+    transition: transform 0.2s ease;
+  }
+  
+  .dropdown-arrow.rotated {
+    transform: rotate(180deg);
+  }
+
+  .user-dropdown {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background: white;
+    border: 1px solid #e1e5e9;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    min-width: 280px;
+    z-index: 1000;
+    margin-top: 0.5rem;
+  }
+  
+  .dropdown-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1rem;
+    border-bottom: 1px solid #f0f0f0;
+  }
+  
+  .dropdown-profile-pic {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+  
+  .dropdown-user-info {
+    flex: 1;
+    min-width: 0;
+  }
+  
+  .dropdown-user-name {
+    font-weight: 600;
+    color: #333;
+    font-size: 0.95rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  
+  .dropdown-user-email {
+    color: #666;
+    font-size: 0.85rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  
+  .dropdown-divider {
+    height: 1px;
+    background-color: #f0f0f0;
+    margin: 0.5rem 0;
+  }
+  
+  .dropdown-menu {
+    padding: 0.5rem 0;
+  }
+  
+  .dropdown-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    width: 100%;
+    padding: 0.75rem 1rem;
+    background: none;
+    border: none;
+    text-align: left;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    font-size: 0.9rem;
+    color: #333;
+  }
+  
+  .dropdown-item:hover {
+    background-color: #f8f9fa;
+  }
+  
+  .dropdown-item.beta-status {
+    color: #4361ee;
+    cursor: default;
+    font-weight: 500;
+  }
+  
+  .dropdown-item.beta-status:hover {
+    background-color: rgba(67, 97, 238, 0.05);
+  }
+  
+  .dropdown-item.leave-beta {
+    color: #f59e0b;
+  }
+  
+  .dropdown-item.leave-beta:hover {
+    background-color: #fffbeb;
+  }
+  
+  .dropdown-item.logout-item {
+    color: #dc3545;
+  }
+  
+  .dropdown-item.logout-item:hover {
+    background-color: #fff5f5;
   }
 
   .logout-btn {
