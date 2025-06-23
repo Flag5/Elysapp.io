@@ -4,6 +4,7 @@
   import { userService } from '../lib/api.js';
   import { joinBetaTest } from '../lib/betaTest.js';
   import { userPreferences, loadUserPreferences } from '../stores/preferences.js';
+  import { API_ENDPOINTS } from '../lib/config.js';
   
   export let embedded = false;
   
@@ -159,7 +160,7 @@
     
     try {
       // Send message to API
-      const response = await fetch('https://api.elysapp.io/webchat', {
+      const response = await fetch(API_ENDPOINTS.WEBCHAT, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -168,7 +169,22 @@
       });
       
       if (!response.ok) {
-        throw new Error('Failed to get response');
+        // Check if it's a network/connectivity issue vs server error
+        if (response.status >= 500 || response.status === 0) {
+          // Server error or network issue - backend unavailable
+          throw new Error('Backend unavailable');
+        } else {
+          // Client error (4xx) - backend is available but request failed
+          const errorData = await response.json().catch(() => ({}));
+          chatMessages = [
+            ...chatMessages,
+            {
+              sender: 'elys',
+              text: errorData.message || 'I\'m sorry, I couldn\'t process your request at the moment. Please try again.'
+            }
+          ];
+          return;
+        }
       }
       
       const data = await response.json();
@@ -183,7 +199,19 @@
       ];
     } catch (error) {
       console.error('Error sending message:', error);
-      await handleBackendUnavailable();
+      // Only show backend unavailable for network errors or server errors
+      if (error.message === 'Backend unavailable' || error.name === 'TypeError' || error.message.includes('fetch')) {
+        await handleBackendUnavailable();
+      } else {
+        // For other errors, show a generic error message
+        chatMessages = [
+          ...chatMessages,
+          {
+            sender: 'elys',
+            text: 'I\'m sorry, something went wrong. Please try again.'
+          }
+        ];
+      }
     } finally {
       isLoading = false;
       
@@ -199,12 +227,12 @@
   async function handleBackendUnavailable() {
     isDevelopmentMode = true;
     
-    // Show 5-second loading state with development message
+    // Show backend unavailable message
     chatMessages = [
       ...chatMessages,
       {
         sender: 'elys',
-        text: '🔧 We\'re currently developing Elys, now working on the backend. The service is temporarily offline while we make improvements... Sorry!'
+        text: '🔧 We\'re currently developing Elys, you may experience delays. The backend is not available at the moment.'
       }
     ];
     
@@ -214,16 +242,6 @@
         chatContainer.scrollTop = chatContainer.scrollHeight;
       }
     }, 0);
-    
-    // Wait 5 seconds
-    await new Promise(resolve => setTimeout(resolve, 5000));
-    
-    // Check user status and show appropriate message
-    if (!currentUser) {
-      showLoginPrompt();
-    } else {
-      await checkBetaTestStatus();
-    }
   }
   
   function showLoginPrompt() {
@@ -352,6 +370,7 @@
       <div class="chat-title">
         <img src="/placeholder-logo.svg" alt="Elys Logo" />
         <span>Ask Elys</span>
+        <span class="beta-label">beta</span>
       </div>
     </div>
     
@@ -398,6 +417,7 @@
         <div class="chat-title">
           <img src="/placeholder-logo.svg" alt="Elys Logo" />
           <span>Ask Elys</span>
+          <span class="beta-label">beta</span>
         </div>
         <button class="close-button" on:click={closeChat}>
           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -550,6 +570,18 @@
   .chat-title img {
     height: 24px;
     margin-right: 0.5rem;
+  }
+  
+  .beta-label {
+    font-size: 0.7rem;
+    font-weight: 400;
+    opacity: 1;
+    margin-left: 0.5rem;
+    padding: 0.1rem 0.4rem;
+    background-color: rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    text-transform: lowercase;
+    color: #ffd700;
   }
   
   .close-button {

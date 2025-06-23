@@ -1,5 +1,5 @@
 import { writable } from 'svelte/store';
-import { onAuthStateChange } from '../lib/auth.js';
+import { onAuthStateChange, handleRedirectResult } from '../lib/auth.js';
 import { userService, authService } from '../lib/api.js';
 import { STORAGE_KEYS, DEFAULT_PREFERENCES } from '../lib/config.js';
 import { createLogger } from '../lib/logger.js';
@@ -113,6 +113,11 @@ async function handleUserAuthentication(firebaseUser) {
  */
 export function initAuthStore() {
   logger.emoji('🚀', 'Initializing auth store...');
+  
+  // Handle redirect result from Google sign-in
+  handleRedirectResult().catch((error) => {
+    logger.error('❌ Redirect result error:', error);
+  });
   
   // Check for existing session on startup
   const storedToken = localStorage.getItem(STORAGE_KEYS.SESSION_TOKEN);

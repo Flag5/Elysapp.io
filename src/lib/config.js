@@ -20,6 +20,9 @@ export const API_ENDPOINTS = {
   AUTH_VALIDATE: `${API_BASE_URL}/api/v1/auth/session/validate`,
   AUTH_SESSIONS: `${API_BASE_URL}/api/v1/auth/sessions`,
   
+  // Chat
+  WEBCHAT: `${API_BASE_URL}/api/v1/chat`,
+  
   // Health Check
   HEALTH: `${API_BASE_URL}/api/v1/health`,
 };

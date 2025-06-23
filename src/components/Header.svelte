@@ -436,21 +436,6 @@
     background-color: #fff5f5;
   }
 
-  .logout-btn {
-    background-color: #f8f9fa;
-    color: #333;
-    border: 1px solid #dadce0;
-    border-radius: 4px;
-    padding: 0.5rem 1rem;
-    font-size: 0.85rem;
-    font-weight: 500;
-    transition: all 0.2s ease;
-    cursor: pointer;
-  }
-
-  .logout-btn:hover {
-    background-color: #e8eaed;
-  }
   
   @media (max-width: 768px) {
     nav {
@@ -463,11 +448,6 @@
 
     .google-login-btn {
       padding: 0.5rem 0.8rem;
-      font-size: 0.8rem;
-    }
-
-    .logout-btn {
-      padding: 0.4rem 0.8rem;
       font-size: 0.8rem;
     }
   }
