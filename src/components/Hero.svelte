@@ -16,11 +16,11 @@
 <section class="hero">
   <div class="container">
     <div class="hero-content">
-      <div class="hero-badge">Privacy first Smart AI agent</div>
-      <h1>Your AI Guardian, situational aware.</h1>
+      <div class="hero-badge">Privacy First</div>
+      <h1>Your Private Smart AI Agent</h1>
       <p class="subtitle">
         Elys helps you navigate everyday life with more peace of mind, less stress,
-        and a sense that someone's quietly looking out for you.
+        and a sense that someone's quietly looking out for you while keeping your data completely private and safe.
       </p>
       
       <div class="cta-buttons">

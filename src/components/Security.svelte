@@ -73,54 +73,6 @@
         <p>Our security practices are regularly audited by independent third parties to ensure we maintain the highest standards of data protection and privacy compliance.</p>
       </div>
     </div>
-    
-    <div class="security-comparison">
-      <h3>How Elys Differs from Other Assistants</h3>
-      
-      <div class="comparison-table">
-        <table>
-          <thead>
-            <tr>
-              <th>Feature</th>
-              <th>Google/Apple</th>
-              <th>Elys</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>AI pattern detection</td>
-              <td>❌</td>
-              <td>✅</td>
-            </tr>
-            <tr>
-              <td>Device learning</td>
-              <td>❌</td>
-              <td>✅</td>
-            </tr>
-            <tr>
-              <td>Multi-tiered paranoia</td>
-              <td>❌</td>
-              <td>✅</td>
-            </tr>
-            <tr>
-              <td>Open device platform</td>
-              <td>❌</td>
-              <td>✅</td>
-            </tr>
-            <tr>
-              <td>Community SOS system</td>
-              <td>❌</td>
-              <td>✅</td>
-            </tr>
-            <tr>
-              <td>Chat-to-AI learning loop</td>
-              <td>❌</td>
-              <td>✅</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
   </div>
 </section>
 
@@ -190,52 +142,9 @@
     line-height: 1.6;
   }
   
-  .security-comparison {
-    background-color: white;
-    border-radius: 8px;
-    padding: 3rem;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-  }
-  
-  .security-comparison h3 {
-    font-size: 1.8rem;
-    margin-bottom: 2rem;
-    text-align: center;
-    color: #333;
-  }
-  
-  .comparison-table {
-    overflow-x: auto;
-  }
-  
-  table {
-    width: 100%;
-    border-collapse: collapse;
-  }
-  
-  th, td {
-    padding: 1rem;
-    text-align: left;
-    border-bottom: 1px solid #eee;
-  }
-  
-  th {
-    background-color: #f5f7ff;
-    font-weight: 600;
-  }
-  
-  td:nth-child(2), td:nth-child(3) {
-    text-align: center;
-    font-size: 1.2rem;
-  }
-  
   @media (max-width: 768px) {
     .security-grid {
       grid-template-columns: 1fr;
-    }
-    
-    .security-comparison {
-      padding: 2rem;
     }
   }
 </style>
