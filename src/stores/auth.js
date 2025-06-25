@@ -30,7 +30,9 @@ async function handleUserAuthentication(firebaseUser) {
         uid: firebaseUser.uid,
         email: firebaseUser.email,
         displayName: firebaseUser.displayName,
-        emailVerified: firebaseUser.emailVerified
+        emailVerified: firebaseUser.emailVerified,
+        providerId: firebaseUser.providerId,
+        providerData: firebaseUser.providerData
       });
       
       // Create or update user in backend
@@ -74,10 +76,13 @@ async function handleUserAuthentication(firebaseUser) {
       
     } catch (error) {
       logger.error('❌ Backend authentication failed:', error);
-      logger.debug('Error details:', {
+      logger.debug('❌ Backend error details:', {
         message: error.message,
         stack: error.stack,
-        response: error.response
+        response: error.response,
+        status: error.response?.status,
+        statusText: error.response?.statusText,
+        data: error.response?.data
       });
       // Still set Firebase user even if backend fails
       backendUser.set(null);
@@ -115,8 +120,19 @@ export function initAuthStore() {
   logger.emoji('🚀', 'Initializing auth store...');
   
   // Handle redirect result from Google sign-in
-  handleRedirectResult().catch((error) => {
+  handleRedirectResult().then((user) => {
+    if (user) {
+      logger.emoji('🎉', 'Redirect result successful, user found:', user.email);
+    } else {
+      logger.debug('📭 No redirect result found on init');
+    }
+  }).catch((error) => {
     logger.error('❌ Redirect result error:', error);
+    logger.debug('❌ Redirect error details:', {
+      code: error.code,
+      message: error.message,
+      stack: error.stack
+    });
   });
   
   // Check for existing session on startup
@@ -159,8 +175,14 @@ export function initAuthStore() {
       logger.debug('👤 Firebase user details:', {
         uid: firebaseUser.uid,
         email: firebaseUser.email,
-        displayName: firebaseUser.displayName
+        displayName: firebaseUser.displayName,
+        emailVerified: firebaseUser.emailVerified,
+        providerId: firebaseUser.providerId,
+        accessToken: firebaseUser.accessToken ? 'PRESENT' : 'MISSING',
+        refreshToken: firebaseUser.refreshToken ? 'PRESENT' : 'MISSING'
       });
+    } else {
+      logger.debug('🚫 User logged out - checking why...');
     }
     handleUserAuthentication(firebaseUser);
   });

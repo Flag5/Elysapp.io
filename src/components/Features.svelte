@@ -159,46 +159,6 @@
     margin-bottom: 4rem;
   }
   
-  .features-grid .feature-card {
-    grid-column: 1 / -1;
-    margin-bottom: 2rem;
-  }
-  
-  .feature-card {
-    background-color: white;
-    border-radius: 8px;
-    padding: 2rem;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-  }
-  
-  .feature-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-  }
-  
-  .feature-icon {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 60px;
-    height: 60px;
-    background-color: #4361ee;
-    color: white;
-    border-radius: 50%;
-    margin-bottom: 1.5rem;
-  }
-  
-  .feature-card h3 {
-    font-size: 1.5rem;
-    margin-bottom: 1rem;
-    color: #333;
-  }
-  
-  .feature-card p {
-    color: #666;
-    line-height: 1.6;
-  }
   
   .features-highlight {
     background-color: #4361ee;
@@ -267,9 +227,6 @@
       grid-template-columns: 1fr;
     }
     
-    .features-grid .feature-card {
-      grid-column: 1;
-    }
     
     .features-highlight {
       padding: 2rem;
@@ -281,8 +238,5 @@
       grid-template-columns: repeat(2, 1fr);
     }
     
-    .features-grid .feature-card {
-      grid-column: 1 / -1;
-    }
   }
 </style>
