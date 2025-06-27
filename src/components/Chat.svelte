@@ -3,7 +3,7 @@
   import { backendUser } from '../stores/auth.js';
   import { userService } from '../lib/api.js';
   import { joinBetaTest } from '../lib/betaTest.js';
-  import { userPreferences, loadUserPreferences } from '../stores/preferences.js';
+  import { userPreferences } from '../stores/preferences.js';
   import { API_ENDPOINTS } from '../lib/config.js';
   
   export let embedded = false;
@@ -19,8 +19,7 @@
   // Subscribe to user store
   const unsubscribeUser = backendUser.subscribe(async user => {
     currentUser = user;
-    // Load user preferences when user changes
-    await loadUserPreferences(user);
+    // User preferences are already loaded by auth store, no need to reload here
     if (user) {
       updateWelcomeMessage();
     }
@@ -75,11 +74,6 @@
   }
   
   onMount(async () => {
-    // Load user preferences if user is already logged in
-    if (currentUser) {
-      await loadUserPreferences();
-    }
-    
     // Add initial welcome message
     const welcomeMessage = currentUser ? getPersonalizedWelcomeMessage() : 'Hello! I\'m Elys, what can I do for you?';
     chatMessages = [

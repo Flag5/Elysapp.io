@@ -3,6 +3,7 @@ import { onAuthStateChange, handleRedirectResult } from '../lib/auth.js';
 import { userService, authService } from '../lib/api.js';
 import { STORAGE_KEYS, DEFAULT_PREFERENCES } from '../lib/config.js';
 import { createLogger } from '../lib/logger.js';
+import { clearPreferencesCache } from './preferences.js';
 
 const logger = createLogger('Auth');
 
@@ -106,6 +107,9 @@ async function handleUserAuthentication(firebaseUser) {
     sessionToken.set(null);
     userPreferences.set(DEFAULT_PREFERENCES);
     isAuthenticated.set(false);
+    
+    // Clear preferences cache
+    clearPreferencesCache();
   }
   
   // Always update Firebase user state
@@ -162,6 +166,7 @@ export function initAuthStore() {
         backendUser.set(null);
         sessionToken.set(null);
         isAuthenticated.set(false);
+        clearPreferencesCache();
       });
   } else {
     logger.emoji('📭', 'No stored session found');
@@ -250,5 +255,6 @@ export async function logoutUser() {
     userPreferences.set(DEFAULT_PREFERENCES);
     isAuthenticated.set(false);
     user.set(null);
+    clearPreferencesCache();
   }
 }
