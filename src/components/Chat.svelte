@@ -1,7 +1,7 @@
 <script>
   import { onMount, onDestroy } from 'svelte';
   import { backendUser } from '../stores/auth.js';
-  import { userService } from '../lib/api.js';
+  import { userService, apiClient } from '../lib/api.js';
   import { joinBetaTest } from '../lib/betaTest.js';
   import { userPreferences } from '../stores/preferences.js';
   import { API_ENDPOINTS } from '../lib/config.js';
@@ -153,35 +153,8 @@
     isLoading = true;
     
     try {
-      // Send message to API
-      const response = await fetch(API_ENDPOINTS.WEBCHAT, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ message })
-      });
-      
-      if (!response.ok) {
-        // Check if it's a network/connectivity issue vs server error
-        if (response.status >= 500 || response.status === 0) {
-          // Server error or network issue - backend unavailable
-          throw new Error('Backend unavailable');
-        } else {
-          // Client error (4xx) - backend is available but request failed
-          const errorData = await response.json().catch(() => ({}));
-          chatMessages = [
-            ...chatMessages,
-            {
-              sender: 'elys',
-              text: errorData.message || 'I\'m sorry, I couldn\'t process your request at the moment. Please try again.'
-            }
-          ];
-          return;
-        }
-      }
-      
-      const data = await response.json();
+      // Send message to API using the authenticated API client
+      const data = await apiClient.post(API_ENDPOINTS.WEBCHAT, { message });
       
       // Add Elys response to chat
       chatMessages = [
@@ -193,16 +166,21 @@
       ];
     } catch (error) {
       console.error('Error sending message:', error);
-      // Only show backend unavailable for network errors or server errors
-      if (error.message === 'Backend unavailable' || error.name === 'TypeError' || error.message.includes('fetch')) {
+      
+      // Check if it's a network/connectivity issue vs server error
+      if (error.name === 'TypeError' || error.message.includes('fetch') || error.message.includes('Failed to fetch')) {
+        // Network error - backend unavailable
+        await handleBackendUnavailable();
+      } else if (error.message.includes('HTTP 5')) {
+        // Server error (5xx) - backend unavailable
         await handleBackendUnavailable();
       } else {
-        // For other errors, show a generic error message
+        // Client error (4xx) or other errors - show the error message from the API
         chatMessages = [
           ...chatMessages,
           {
             sender: 'elys',
-            text: 'I\'m sorry, something went wrong. Please try again.'
+            text: error.message || 'I\'m sorry, I couldn\'t process your request at the moment. Please try again.'
           }
         ];
       }
