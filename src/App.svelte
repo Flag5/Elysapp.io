@@ -8,7 +8,28 @@
   import Footer from './components/Footer.svelte';
   import Chat from './components/Chat.svelte';
   import ToastContainer from './components/ToastContainer.svelte';
-  import { initAuthStore, destroyAuthStore } from './stores/auth.js';
+  import { initAuthStore, destroyAuthStore, backendUser } from './stores/auth.js';
+
+  let redirectTimeout;
+  let hasCheckedInitialAuth = false;
+
+  // Subscribe to auth changes and redirect when user logs in
+  const unsubscribeAuth = backendUser.subscribe(user => {
+    if (user && !window.location.search.includes('no-redirect')) {
+      // If this is the initial check, add a small delay
+      if (!hasCheckedInitialAuth) {
+        redirectTimeout = setTimeout(() => {
+          window.location.href = '/chat.html';
+        }, 1000);
+        hasCheckedInitialAuth = true;
+      } else {
+        // If user just logged in, redirect immediately
+        window.location.href = '/chat.html';
+      }
+    } else if (!user) {
+      hasCheckedInitialAuth = true;
+    }
+  });
 
   onMount(() => {
     initAuthStore();
@@ -16,6 +37,10 @@
 
   onDestroy(() => {
     destroyAuthStore();
+    unsubscribeAuth();
+    if (redirectTimeout) {
+      clearTimeout(redirectTimeout);
+    }
   });
 </script>
 

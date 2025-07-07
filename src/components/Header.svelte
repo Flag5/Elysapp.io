@@ -25,6 +25,8 @@
     try {
       console.log('🔘 Login button clicked');
       await signInWithGoogle();
+      // Redirect to chat after successful login
+      window.location.href = '/chat.html';
     } catch (error) {
       console.error('Sign in failed:', error);
       alert('Sign in failed. Please try again.');
@@ -103,6 +105,7 @@
         <li><a href="#features">Features</a></li>
         <li><a href="#privacy">Privacy</a></li>
         <li><a href="#security">Security</a></li>
+        <li><a href="/chat.html" class="chat-link">Chat</a></li>
       </ul>
     </nav>
 
@@ -154,6 +157,14 @@
                     <span>Join Beta Program</span>
                   </button>
                 {/if}
+                
+                <a href="/chat.html" class="dropdown-item chat-dropdown-item" on:click={closeUserMenu}>
+                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                    <path d="M2 2h12a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H4.414L2 14.586V3a1 1 0 0 1 1-1z" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M5 7h6M5 9h4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                  <span>Chat</span>
+                </a>
                 
                 <button class="dropdown-item" on:click={() => {closeUserMenu(); /* Add profile functionality later */}}>
                   <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
@@ -249,6 +260,22 @@
   nav a:hover {
     color: #4361ee;
     text-decoration: none;
+  }
+  
+  nav a.chat-link {
+    background: linear-gradient(135deg, #4361ee, #7209b7);
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    font-weight: 600;
+    transition: all 0.2s ease;
+  }
+  
+  nav a.chat-link:hover {
+    background: linear-gradient(135deg, #3651d4, #6108a3);
+    color: white;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(67, 97, 238, 0.3);
   }
   
   .auth-section {
@@ -434,6 +461,17 @@
   
   .dropdown-item.logout-item:hover {
     background-color: #fff5f5;
+  }
+  
+  .dropdown-item.chat-dropdown-item {
+    color: #4361ee;
+    font-weight: 500;
+    text-decoration: none;
+  }
+  
+  .dropdown-item.chat-dropdown-item:hover {
+    background-color: rgba(67, 97, 238, 0.1);
+    color: #4361ee;
   }
 
   

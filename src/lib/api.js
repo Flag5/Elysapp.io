@@ -308,5 +308,36 @@ export const healthService = {
   },
 };
 
+/**
+ * Chat API service
+ */
+export const chatService = {
+  /**
+   * Get user's conversation history
+   */
+  async getConversations(limit = 20, offset = 0) {
+    const url = `${API_ENDPOINTS.CHAT_CONVERSATIONS}?limit=${limit}&offset=${offset}`;
+    return apiClient.get(url);
+  },
+
+  /**
+   * Get messages for a specific conversation
+   */
+  async getConversationMessages(conversationId) {
+    return apiClient.get(API_ENDPOINTS.CHAT_CONVERSATION_MESSAGES(conversationId));
+  },
+
+  /**
+   * Send a message to a specific conversation
+   */
+  async sendMessage(message, conversationId = null) {
+    const payload = { message };
+    if (conversationId) {
+      payload.conversation_id = conversationId;
+    }
+    return apiClient.post(API_ENDPOINTS.WEBCHAT, payload);
+  },
+};
+
 // Export the API client for custom requests
 export { apiClient };

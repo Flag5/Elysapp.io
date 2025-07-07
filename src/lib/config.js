@@ -22,6 +22,8 @@ export const API_ENDPOINTS = {
   
   // Chat
   WEBCHAT: `${API_BASE_URL}/api/v1/chat`,
+  CHAT_CONVERSATIONS: `${API_BASE_URL}/api/v1/chat/conversations`,
+  CHAT_CONVERSATION_MESSAGES: (id) => `${API_BASE_URL}/api/v1/chat/conversations/${id}/messages`,
   
   // Health Check
   HEALTH: `${API_BASE_URL}/api/v1/health`,

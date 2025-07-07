@@ -1,5 +1,6 @@
 import { defineConfig } from 'vite';
 import { svelte } from '@sveltejs/vite-plugin-svelte';
+import { resolve } from 'path';
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -9,6 +10,12 @@ export default defineConfig({
     outDir: 'dist',
     emptyOutDir: true,
     minify: 'terser',
+    rollupOptions: {
+      input: {
+        main: resolve(__dirname, 'index.html'),
+        chat: resolve(__dirname, 'chat.html'),
+      },
+    },
     terserOptions: {
       compress: {
         // Remove console logs in production
