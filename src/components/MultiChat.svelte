@@ -59,7 +59,15 @@
   }
 
   async function selectConversation(conversation) {
+    // Clear current state first
+    chatMessages = [];
+    isLoading = true;
+    
+    // Clear the force new conversation flag when selecting an existing conversation
+    window.forceNewConversation = false;
+    
     selectedConversation = conversation;
+    logger.debug('Selecting conversation:', conversation.id);
     
     try {
       // Load messages for this conversation
@@ -82,6 +90,8 @@
       logger.error('Failed to load conversation messages:', error);
       chatMessages = [];
       addWelcomeMessage();
+    } finally {
+      isLoading = false;
     }
   }
 
@@ -90,6 +100,13 @@
     chatMessages = [];
     addWelcomeMessage();
     userInput = '';
+    
+    // Set a flag to force new conversation on next message
+    window.forceNewConversation = true;
+    
+    // Force refresh of conversation list to show the new conversation will appear
+    // after the first message is sent
+    logger.debug('Starting new chat - cleared conversation state');
   }
 
   function addWelcomeMessage() {
@@ -152,8 +169,14 @@
     isLoading = true;
     
     try {
-      // Send message with conversation ID if available
-      const data = await chatService.sendMessage(message, selectedConversation?.id);
+      // Check if we should force a new conversation
+      const forceNew = window.forceNewConversation || false;
+      if (forceNew) {
+        window.forceNewConversation = false; // Reset the flag
+      }
+      
+      // Send message with conversation ID if available and force_new flag
+      const data = await chatService.sendMessage(message, selectedConversation?.id, forceNew);
       
       // Update selected conversation ID if this was a new chat
       if (!selectedConversation && data.conversation_id) {
@@ -166,6 +189,18 @@
           created_at: new Date().toISOString(),
           last_message_at: new Date().toISOString()
         };
+        
+        // Trigger conversation list refresh for authenticated users
+        if (currentUser) {
+          // Force the ConversationList component to refresh by triggering a reactive update
+          setTimeout(() => {
+            // This will cause the ConversationList to reload conversations
+            const conversationListComponent = document.querySelector('.conversation-list');
+            if (conversationListComponent) {
+              conversationListComponent.dispatchEvent(new CustomEvent('refresh-conversations'));
+            }
+          }, 100);
+        }
       }
       
       // Add Elys response to chat

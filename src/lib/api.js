@@ -330,10 +330,13 @@ export const chatService = {
   /**
    * Send a message to a specific conversation
    */
-  async sendMessage(message, conversationId = null) {
+  async sendMessage(message, conversationId = null, forceNew = false) {
     const payload = { message };
     if (conversationId) {
       payload.conversation_id = conversationId;
+    }
+    if (forceNew) {
+      payload.force_new_conversation = true;
     }
     return apiClient.post(API_ENDPOINTS.WEBCHAT, payload);
   },

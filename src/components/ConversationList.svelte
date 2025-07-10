@@ -17,6 +17,17 @@
 
   onMount(async () => {
     await loadConversations();
+    
+    // Listen for refresh events from the chat component
+    const handleRefresh = () => {
+      setTimeout(() => loadConversations(), 500); // Small delay to ensure backend has processed
+    };
+    
+    document.addEventListener('refresh-conversations', handleRefresh);
+    
+    return () => {
+      document.removeEventListener('refresh-conversations', handleRefresh);
+    };
   });
 
   async function loadConversations() {
