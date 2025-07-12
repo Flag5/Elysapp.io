@@ -9,6 +9,7 @@
   import { joinBetaTest, leaveBetaTest } from '../lib/betaTest.js';
   import { addToast } from '../stores/toast.js';
   import { userPreferences, loadUserPreferences } from '../stores/preferences.js';
+  import { markdownToSafeHtml } from '../lib/markdown.js';
   import './MultiChat.css';
 
   const logger = createLogger('MultiChat');
@@ -440,7 +441,7 @@
       {#each chatMessages as message}
         <div class="message {message.sender}">
           <div class="message-content">
-            {@html message.text}
+            {@html markdownToSafeHtml(message.text)}
           </div>
         </div>
       {/each}

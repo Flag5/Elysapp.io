@@ -5,6 +5,7 @@
   import { joinBetaTest } from '../lib/betaTest.js';
   import { userPreferences } from '../stores/preferences.js';
   import { API_ENDPOINTS } from '../lib/config.js';
+  import { markdownToSafeHtml } from '../lib/markdown.js';
   
   export let embedded = false;
   
@@ -350,7 +351,7 @@
       {#each chatMessages as message}
         <div class="message {message.sender}">
           <div class="message-content">
-            {@html message.text}
+            {@html markdownToSafeHtml(message.text)}
           </div>
         </div>
       {/each}
@@ -403,7 +404,7 @@
         {#each chatMessages as message}
           <div class="message {message.sender}">
             <div class="message-content">
-              {@html message.text}
+              {@html markdownToSafeHtml(message.text)}
             </div>
           </div>
         {/each}
@@ -609,6 +610,40 @@
     color: #333;
     border-bottom-left-radius: 4px;
     white-space: pre-line;
+  }
+  
+  /* Markdown styling for chat messages */
+  .message-content strong {
+    font-weight: 600;
+  }
+  
+  .message-content em {
+    font-style: italic;
+  }
+  
+  .message-content code {
+    background-color: rgba(0, 0, 0, 0.1);
+    padding: 0.1rem 0.3rem;
+    border-radius: 3px;
+    font-family: 'Courier New', monospace;
+    font-size: 0.9em;
+  }
+  
+  .message-content a {
+    color: #4361ee;
+    text-decoration: underline;
+  }
+  
+  .message-content a:hover {
+    color: #3a56d4;
+  }
+  
+  .user .message-content code {
+    background-color: rgba(255, 255, 255, 0.2);
+  }
+  
+  .user .message-content a {
+    color: #ffffff;
   }
   
   .elys .message-content:has-text("🔧") {
