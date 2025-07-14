@@ -613,15 +613,15 @@
   }
   
   /* Markdown styling for chat messages */
-  .message-content strong {
+  :global(.message-content strong) {
     font-weight: 600;
   }
   
-  .message-content em {
+  :global(.message-content em) {
     font-style: italic;
   }
   
-  .message-content code {
+  :global(.message-content code) {
     background-color: rgba(0, 0, 0, 0.1);
     padding: 0.1rem 0.3rem;
     border-radius: 3px;
@@ -629,20 +629,20 @@
     font-size: 0.9em;
   }
   
-  .message-content a {
+  :global(.message-content a) {
     color: #4361ee;
     text-decoration: underline;
   }
   
-  .message-content a:hover {
+  :global(.message-content a:hover) {
     color: #3a56d4;
   }
   
-  .user .message-content code {
+  :global(.user .message-content code) {
     background-color: rgba(255, 255, 255, 0.2);
   }
   
-  .user .message-content a {
+  :global(.user .message-content a) {
     color: #ffffff;
   }
   
