@@ -1,9 +1,9 @@
 import { writable } from 'svelte/store';
 import { onAuthStateChange, handleRedirectResult } from '../lib/auth.js';
 import { userService, authService } from '../lib/api.js';
-import { STORAGE_KEYS, DEFAULT_PREFERENCES } from '../lib/config.js';
+import { STORAGE_KEYS } from '../lib/config.js';
 import { createLogger } from '../lib/logger.js';
-import { clearPreferencesCache } from './preferences.js';
+
 
 const logger = createLogger('Auth');
 
@@ -14,7 +14,7 @@ export const loading = writable(true);
 // Backend user data and session management
 export const backendUser = writable(null);
 export const sessionToken = writable(null);
-export const userPreferences = writable(DEFAULT_PREFERENCES);
+// User preferences removed
 export const isAuthenticated = writable(false);
 
 // Initialize auth state listener
@@ -54,14 +54,7 @@ async function handleUserAuthentication(firebaseUser) {
       sessionToken.set(sessionData.session_token);
       isAuthenticated.set(true);
       
-      // Load user preferences
-      try {
-        const preferencesData = await userService.getUserPreferences(sessionData.user.id);
-        userPreferences.set({ ...DEFAULT_PREFERENCES, ...preferencesData.preferences });
-      } catch (error) {
-        logger.warn('Could not load user preferences:', error);
-        userPreferences.set(DEFAULT_PREFERENCES);
-      }
+      // User preferences removed
       
       // Log login activity
       try {
@@ -105,11 +98,10 @@ async function handleUserAuthentication(firebaseUser) {
     // Clear stores
     backendUser.set(null);
     sessionToken.set(null);
-    userPreferences.set(DEFAULT_PREFERENCES);
+    // User preferences removed
     isAuthenticated.set(false);
-    
-    // Clear preferences cache
-    clearPreferencesCache();
+  
+
   }
   
   // Always update Firebase user state
@@ -153,11 +145,11 @@ export function initAuthStore() {
     authService.validateSession()
       .then(() => {
         logger.emoji('✅', 'Session validated');
-        // Load preferences
-        return userService.getUserPreferences(storedUser.id);
+        // User preferences removed
+        return Promise.resolve();
       })
-      .then((preferencesData) => {
-        userPreferences.set({ ...DEFAULT_PREFERENCES, ...preferencesData.preferences });
+      .then(() => {
+        // User preferences removed
       })
       .catch((error) => {
         logger.warn('❌ Session validation failed:', error);
@@ -166,7 +158,7 @@ export function initAuthStore() {
         backendUser.set(null);
         sessionToken.set(null);
         isAuthenticated.set(false);
-        clearPreferencesCache();
+
       });
   } else {
     logger.emoji('📭', 'No stored session found');
@@ -204,33 +196,7 @@ export function destroyAuthStore() {
   }
 }
 
-/**
- * Update user preferences
- */
-export async function updateUserPreferences(newPreferences) {
-  const currentUser = authService.getStoredUser();
-  if (!currentUser) {
-    throw new Error('No authenticated user');
-  }
-  
-  try {
-    const updatedPrefs = { ...DEFAULT_PREFERENCES, ...newPreferences };
-    await userService.updateUserPreferences(currentUser.id, updatedPrefs);
-    userPreferences.set(updatedPrefs);
-    
-    // Log activity
-    await userService.createUserActivity(
-      currentUser.id,
-      'preference_update',
-      { updated_preferences: Object.keys(newPreferences) }
-    );
-    
-    console.log('✅ Preferences updated:', updatedPrefs);
-  } catch (error) {
-    console.error('❌ Failed to update preferences:', error);
-    throw error;
-  }
-}
+// User preferences functionality removed
 
 /**
  * Logout user from both Firebase and backend
@@ -252,9 +218,9 @@ export async function logoutUser() {
     // Force clear local state even if logout fails
     backendUser.set(null);
     sessionToken.set(null);
-    userPreferences.set(DEFAULT_PREFERENCES);
+    // User preferences removed
     isAuthenticated.set(false);
     user.set(null);
-    clearPreferencesCache();
+
   }
 }

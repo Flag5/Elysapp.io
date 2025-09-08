@@ -12,7 +12,7 @@ export const API_ENDPOINTS = {
   USERS: `${API_BASE_URL}/api/v1/users`,
   USER_BY_ID: (id) => `${API_BASE_URL}/api/v1/users/${id}`,
   USER_ME: `${API_BASE_URL}/api/v1/users/me`,
-  USER_PREFERENCES: (id) => `${API_BASE_URL}/api/v1/users/${id}/preferences`,
+  // USER_PREFERENCES removed since preferences system was removed
   USER_ACTIVITY: (id) => `${API_BASE_URL}/api/v1/users/${id}/activity`,
   
   // Authentication
@@ -29,19 +29,13 @@ export const API_ENDPOINTS = {
   HEALTH: `${API_BASE_URL}/api/v1/health`,
 };
 
-// Default user preferences
-export const DEFAULT_PREFERENCES = {
-  theme: 'light',
-  language: 'en',
-  notifications: true,
-  analytics: true,
-};
+// Default user preferences removed since preferences system was removed
 
 // Session storage keys
 export const STORAGE_KEYS = {
   SESSION_TOKEN: 'elys_session_token',
   USER_DATA: 'elys_user_data',
-  USER_PREFERENCES: 'elys_user_preferences',
+  // USER_PREFERENCES removed since preferences system was removed
 };
 
 // Environment detection

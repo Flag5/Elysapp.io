@@ -6,9 +6,7 @@
   import { createLogger } from '../lib/logger.js';
   import ConversationList from './ConversationList.svelte';
   import { signInWithGoogle, logout } from '../lib/auth.js';
-  import { joinBetaTest, leaveBetaTest } from '../lib/betaTest.js';
   import { addToast } from '../stores/toast.js';
-  import { userPreferences, loadUserPreferences } from '../stores/preferences.js';
   import { markdownToSafeHtml } from '../lib/markdown.js';
   import './MultiChat.css';
 
@@ -26,7 +24,7 @@
   // Subscribe to user store
   const unsubscribeUser = backendUser.subscribe(async user => {
     currentUser = user;
-    await loadUserPreferences(user);
+    // User preferences removed
     if (user && !selectedConversation) {
       // Auto-select the most recent conversation for logged-in users
       await loadMostRecentConversation();
@@ -280,33 +278,7 @@
     showUserMenu = false;
   }
   
-  async function handleJoinBetaTest() {
-    if (!currentUser) return;
-    
-    try {
-      const updatedPrefs = await joinBetaTest(currentUser, $userPreferences);
-      userPreferences.set(updatedPrefs);
-      addToast('🎉 Welcome to the beta program! You\'ll receive notifications when new features are ready for testing.', 'success', 5000);
-      closeUserMenu();
-    } catch (error) {
-      logger.error('Error joining beta test:', error);
-      addToast('Sorry, there was an error joining the beta program. Please try again later.', 'error');
-    }
-  }
-
-  async function handleLeaveBetaTest() {
-    if (!currentUser) return;
-    
-    try {
-      const updatedPrefs = await leaveBetaTest(currentUser, $userPreferences);
-      userPreferences.set(updatedPrefs);
-      addToast('You have left the beta program. You can rejoin anytime from this menu.', 'info', 5000);
-      closeUserMenu();
-    } catch (error) {
-      logger.error('Error leaving beta test:', error);
-      addToast('Sorry, there was an error updating your beta status. Please try again later.', 'error');
-    }
-  }
+  // Beta test functionality removed since preferences system was removed
 
   // Close menu when clicking outside
   function handleClickOutside(event) {
@@ -377,28 +349,7 @@
                 <div class="dropdown-divider"></div>
                 
                 <div class="dropdown-menu">
-                  {#if $userPreferences?.betatest === true}
-                    <div class="dropdown-item beta-status">
-                      <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                        <path d="M8 0L10.472 5.528L16 8L10.472 10.472L8 16L5.528 10.472L0 8L5.528 5.528L8 0Z" fill="#4361ee"/>
-                      </svg>
-                      <span>Beta Member</span>
-                    </div>
-                    
-                    <button class="dropdown-item leave-beta" on:click={handleLeaveBetaTest}>
-                      <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                        <path d="M8 1a7 7 0 1 0 0 14A7 7 0 0 0 8 1zM5.5 5.5L8 8l2.5-2.5L11 6l-2.5 2.5L11 11l-.5.5L8 9l-2.5 2.5L5 11l2.5-2.5L5 6l.5-.5z" fill="currentColor"/>
-                      </svg>
-                      <span>Leave Beta Program</span>
-                    </button>
-                  {:else}
-                    <button class="dropdown-item" on:click={handleJoinBetaTest}>
-                      <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                        <path d="M8 0L10.472 5.528L16 8L10.472 10.472L8 16L5.528 10.472L0 8L5.528 5.528L8 0Z" fill="currentColor"/>
-                      </svg>
-                      <span>Join Beta Program</span>
-                    </button>
-                  {/if}
+                  <!-- Beta test functionality removed -->
                   
                   <button class="dropdown-item" on:click={() => {closeUserMenu(); /* Add profile functionality later */}}>
                     <svg width="16" height="16" viewBox="0 0 16 16" fill="none">

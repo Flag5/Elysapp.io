@@ -17,10 +17,10 @@
   <div class="container">
     <div class="hero-content">
       <div class="hero-badge">Privacy First</div>
-      <h1>Your Private Smart AI Agent</h1>
+      <h1>The Most Powerful AI. Privacy First.</h1>
       <p class="subtitle">
-        Elys helps you navigate everyday life with more peace of mind, less stress,
-        and a sense that someone's quietly looking out for you while keeping your data completely private and safe.
+        Elys gives you the power of the world's most advanced AI, while ensuring your data stays yours. 
+        An AI that knows you, learns from your conversations, and grows with you over time.
       </p>
       
       <div class="cta-buttons">

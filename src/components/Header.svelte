@@ -3,9 +3,7 @@
   import { user, loading, backendUser } from '../stores/auth.js';
   import { signInWithGoogle, logout } from '../lib/auth.js';
   import { userService } from '../lib/api.js';
-  import { joinBetaTest, leaveBetaTest } from '../lib/betaTest.js';
   import { addToast } from '../stores/toast.js';
-  import { userPreferences, loadUserPreferences } from '../stores/preferences.js';
   
   let scrolled = false;
   let showUserMenu = false;
@@ -14,7 +12,7 @@
   // Subscribe to backend user for preferences
   const unsubscribeUser = backendUser.subscribe(async user => {
     currentUser = user;
-    await loadUserPreferences(user);
+    // User preferences removed
   });
   
   function handleScroll() {
@@ -50,33 +48,7 @@
     showUserMenu = false;
   }
   
-  async function handleJoinBetaTest() {
-    if (!currentUser) return;
-    
-    try {
-      const updatedPrefs = await joinBetaTest(currentUser, $userPreferences);
-      userPreferences.set(updatedPrefs);
-      addToast('🎉 Welcome to the beta program! You\'ll receive notifications when new features are ready for testing.', 'success', 5000);
-      closeUserMenu();
-    } catch (error) {
-      console.error('Error joining beta test:', error);
-      addToast('Sorry, there was an error joining the beta program. Please try again later.', 'error');
-    }
-  }
-
-  async function handleLeaveBetaTest() {
-    if (!currentUser) return;
-    
-    try {
-      const updatedPrefs = await leaveBetaTest(currentUser, $userPreferences);
-      userPreferences.set(updatedPrefs);
-      addToast('You have left the beta program. You can rejoin anytime from this menu.', 'info', 5000);
-      closeUserMenu();
-    } catch (error) {
-      console.error('Error leaving beta test:', error);
-      addToast('Sorry, there was an error updating your beta status. Please try again later.', 'error');
-    }
-  }
+  // Beta test functionality removed since preferences system was removed
 
   // Close menu when clicking outside
   function handleClickOutside(event) {
@@ -135,28 +107,7 @@
               <div class="dropdown-divider"></div>
               
               <div class="dropdown-menu">
-                {#if $userPreferences?.betatest === true}
-                  <div class="dropdown-item beta-status">
-                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                      <path d="M8 0L10.472 5.528L16 8L10.472 10.472L8 16L5.528 10.472L0 8L5.528 5.528L8 0Z" fill="#4361ee"/>
-                    </svg>
-                    <span>Beta Member</span>
-                  </div>
-                  
-                  <button class="dropdown-item leave-beta" on:click={handleLeaveBetaTest}>
-                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                      <path d="M8 1a7 7 0 1 0 0 14A7 7 0 0 0 8 1zM5.5 5.5L8 8l2.5-2.5L11 6l-2.5 2.5L11 11l-.5.5L8 9l-2.5 2.5L5 11l2.5-2.5L5 6l.5-.5z" fill="currentColor"/>
-                    </svg>
-                    <span>Leave Beta Program</span>
-                  </button>
-                {:else}
-                  <button class="dropdown-item" on:click={handleJoinBetaTest}>
-                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                      <path d="M8 0L10.472 5.528L16 8L10.472 10.472L8 16L5.528 10.472L0 8L5.528 5.528L8 0Z" fill="currentColor"/>
-                    </svg>
-                    <span>Join Beta Program</span>
-                  </button>
-                {/if}
+                <!-- Beta test functionality removed -->
                 
                 <a href="/chat.html" class="dropdown-item chat-dropdown-item" on:click={closeUserMenu}>
                   <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
@@ -437,23 +388,7 @@
     background-color: #f8f9fa;
   }
   
-  .dropdown-item.beta-status {
-    color: #4361ee;
-    cursor: default;
-    font-weight: 500;
-  }
-  
-  .dropdown-item.beta-status:hover {
-    background-color: rgba(67, 97, 238, 0.05);
-  }
-  
-  .dropdown-item.leave-beta {
-    color: #f59e0b;
-  }
-  
-  .dropdown-item.leave-beta:hover {
-    background-color: #fffbeb;
-  }
+  /* Beta test CSS removed */
   
   .dropdown-item.logout-item {
     color: #dc3545;

@@ -2,8 +2,6 @@
   import { onMount, onDestroy } from 'svelte';
   import { backendUser } from '../stores/auth.js';
   import { userService, apiClient } from '../lib/api.js';
-  import { joinBetaTest } from '../lib/betaTest.js';
-  import { userPreferences } from '../stores/preferences.js';
   import { API_ENDPOINTS } from '../lib/config.js';
   import { markdownToSafeHtml } from '../lib/markdown.js';
   
@@ -123,12 +121,7 @@
   async function sendMessage() {
     if (!userInput.trim()) return;
     
-    // Check if we're waiting for a beta response
-    if (isWaitingForBetaResponse) {
-      await handleBetaResponse(userInput.trim());
-      userInput = '';
-      return;
-    }
+    // Beta test functionality removed
     
     // Add user message to chat
     chatMessages = [
@@ -229,97 +222,7 @@
     scrollToBottom();
   }
   
-  async function checkBetaTestStatus() {
-    const hasBetaTest = $userPreferences?.betatest === true;
-    
-    if (hasBetaTest) {
-      showBetaUserMessage();
-    } else {
-      showWaitlistOffer();
-    }
-  }
-  
-  function showBetaUserMessage() {
-    const userEmail = currentUser?.email || 'your registered email';
-    
-    chatMessages = [
-      ...chatMessages,
-      {
-        sender: 'elys',
-        text: `Great news! You're already signed up for our beta program. We'll notify you at <strong>${userEmail}</strong> as soon as this feature is ready for testing.`
-      }
-    ];
-    
-    scrollToBottom();
-  }
-  
-  function showWaitlistOffer() {
-    chatMessages = [
-      ...chatMessages,
-      {
-        sender: 'elys',
-        text: 'Would you like to join our waiting list for early access to this feature? You\'ll get the beta user experience for free and be among the first to try new features!\n\nWrite <strong>"yes"</strong> to join the waiting list.'
-      }
-    ];
-    
-    isWaitingForBetaResponse = true;
-    scrollToBottom();
-  }
-  
-  async function handleBetaResponse(response) {
-    isWaitingForBetaResponse = false;
-    
-    // Add user response to chat
-    chatMessages = [
-      ...chatMessages,
-      {
-        sender: 'user',
-        text: response
-      }
-    ];
-    
-    if (response.toLowerCase() === 'yes') {
-      await joinBetaWaitlist();
-    } else {
-      chatMessages = [
-        ...chatMessages,
-        {
-          sender: 'elys',
-          text: 'No problem! You can always join the beta program later. Is there anything else I can help you with?'
-        }
-      ];
-    }
-    
-    scrollToBottom();
-  }
-  
-  async function joinBetaWaitlist() {
-    try {
-      const updatedPrefs = await joinBetaTest(currentUser, $userPreferences);
-      userPreferences.set(updatedPrefs);
-      
-      const userEmail = currentUser?.email || 'your registered email';
-      
-      chatMessages = [
-        ...chatMessages,
-        {
-          sender: 'elys',
-          text: `🎉 Welcome to the beta program! You've been added to our waiting list and will receive notifications at <strong>${userEmail}</strong> when new features are ready for testing. Thank you for helping us improve the platform!`
-        }
-      ];
-      
-    } catch (error) {
-      console.error('Error joining beta waitlist:', error);
-      
-      chatMessages = [
-        ...chatMessages,
-        {
-          sender: 'elys',
-          text: 'I\'m sorry, there was an error adding you to the beta program. Please try again later or contact support if the issue persists.'
-        }
-      ];
-    }
-  }
+  // Beta test functionality removed since preferences system was removed
   
   function scrollToBottom() {
     setTimeout(() => {

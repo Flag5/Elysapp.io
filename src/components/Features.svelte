@@ -2,87 +2,32 @@
   <div class="container">
     <div class="section-header">
       <h2>What Elys Does</h2>
-      <p>Elys is an intelligent companion that helps you navigate everyday life with more peace of mind.</p>
+      <p>Elys is an AI for everyday use, privacy-first. Powered by state-of-the-art models while keeping your data yours.</p>
     </div>
     
     <div class="features-grid">
-
       
       <div class="adaptive-card">
         <div class="adaptive-icon">
           <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-            <line x1="16" y1="2" x2="16" y2="6"></line>
-            <line x1="8" y1="2" x2="8" y2="6"></line>
-            <line x1="3" y1="10" x2="21" y2="10"></line>
+            <path d="M12 2L2 7v10c0 5.55 3.84 12 9 12s9-6.45 9-12V7l-10-5z"></path>
           </svg>
         </div>
-        <h4>Calendar Awareness</h4>
-        <p>Connects calendar events with your habits and conditions for timely suggestions.</p>
+        <h4>Privacy-First</h4>
+        <p>All data encrypted and stored in Switzerland/EU. GDPR compliant. Never used for training.</p>
       </div>
       
       <div class="adaptive-card">
         <div class="adaptive-icon">
           <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9z"></path>
+            <circle cx="12" cy="12" r="3"></circle>
+            <path d="M12 1v6m0 6v6"></path>
+            <path d="m15.5 3.5-3 3-3-3"></path>
+            <path d="m15.5 20.5-3-3-3 3"></path>
           </svg>
         </div>
-        <h4>Weather & News</h4>
-        <p>Adapts your day based on weather forecasts and relevant news.</p>
-      </div>
-      
-      <div class="adaptive-card">
-        <div class="adaptive-icon">
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M23 12a11.05 11.05 0 0 0-22 0zm-5 7a3 3 0 0 1-6 0v-7"></path>
-          </svg>
-        </div>
-        <h4>Battery Awareness</h4>
-        <p>Notices when your device needs charging before important trips.</p>
-      </div>
-      
-      <div class="adaptive-card">
-        <div class="adaptive-icon">
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M3 18v-6a9 9 0 0 1 18 0v6"></path>
-            <path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"></path>
-          </svg>
-        </div>
-        <h4>Device Tracking</h4>
-        <p>Learns what devices travel with you and alerts when one's missing.</p>
-      </div>
-      
-      <div class="adaptive-card">
-        <div class="adaptive-icon">
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
-            <circle cx="12" cy="10" r="3"></circle>
-          </svg>
-        </div>
-        <h4>Location Intelligence</h4>
-        <p>Alerts when something's left behind or misplaced using smart tags.</p>
-      </div>
-      
-      <div class="adaptive-card">
-        <div class="adaptive-icon">
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M3 3v18h18"></path>
-            <path d="M18.7 8l-5.1 5.2-2.8-2.7L7 14.3"></path>
-          </svg>
-        </div>
-        <h4>Market Updates</h4>
-        <p>Keeps you informed about financial changes that matter to you.</p>
-      </div>
-      
-      <div class="adaptive-card">
-        <div class="adaptive-icon">
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8"></path>
-            <path d="M21 3v5h-5"></path>
-          </svg>
-        </div>
-        <h4>Routine Optimization</h4>
-        <p>Learns from your habits to suggest smarter time allocations.</p>
+        <h4>Adaptive Intelligence</h4>
+        <p>Seamlessly blends different AI capabilities during your conversation to deliver the best possible results for each task.</p>
       </div>
       
       <div class="adaptive-card">
@@ -92,38 +37,29 @@
             <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
           </svg>
         </div>
-        <h4>Health Reminders</h4>
-        <p>Gentle nudges for medication, hydration, and wellness habits.</p>
+        <h4>Unified Memory</h4>
+        <p>One consistent experience that remembers your context and preferences across all interactions.</p>
       </div>
       
       <div class="adaptive-card">
         <div class="adaptive-icon">
           <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M9 11H5a2 2 0 0 0-2 2v3c0 1.1.9 2 2 2h4m6-6h4a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2h-4m-6 0a2 2 0 0 0-2-2v-3a2 2 0 0 0 2-2m6 0a2 2 0 0 1 2-2v-3a2 2 0 0 1-2-2"></path>
+            <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+            <polyline points="3.27,6.96 12,12.01 20.73,6.96"></polyline>
+            <line x1="12" y1="22.08" x2="12" y2="12"></line>
           </svg>
         </div>
-        <h4>Social Context</h4>
-        <p>Understands social situations and suggests appropriate responses.</p>
-      </div>
-      
-      <div class="adaptive-card">
-        <div class="adaptive-icon">
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="12" cy="12" r="10"></circle>
-            <polyline points="12,6 12,12 16,14"></polyline>
-          </svg>
-        </div>
-        <h4>Real-time Context</h4>
-        <p>Adapts suggestions to your current situation and environment.</p>
+        <h4>Secure Orchestration</h4>
+        <p>For businesses: access multiple LLMs securely without exposing sensitive data to vendors.</p>
       </div>
     </div>
     
     <div class="features-highlight">
       <div class="highlight-content">
         <h3>Why It Matters</h3>
-        <p>Phones today can do everything — except <em>notice the obvious</em>. Elys fills that gap.</p>
-        <p>Most apps focus on <em>where</em> you are. Elys focuses on <em>what's normal for you</em>. It brings context and awareness into your digital life, quietly in the background.</p>
-        <p>No need to set 12 reminders. No need to obsess over trackers. Elys becomes your invisible AI guardian.</p>
+        <p>Most AI services harvest your data and use it for training. <em>Your conversations become their product</em>. Elys changes that.</p>
+        <p>Elys automatically gives you the <em>best AI response for every question</em> while keeping your data encrypted and private.</p>
+        <p>One AI. Any model. Your data stays yours.</p>
       </div>
     </div>
   </div>

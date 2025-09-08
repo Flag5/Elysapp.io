@@ -169,19 +169,7 @@ export const userService = {
     return apiClient.put(API_ENDPOINTS.USER_BY_ID(userId), userData);
   },
 
-  /**
-   * Get user preferences
-   */
-  async getUserPreferences(userId) {
-    return apiClient.get(API_ENDPOINTS.USER_PREFERENCES(userId));
-  },
-
-  /**
-   * Update user preferences
-   */
-  async updateUserPreferences(userId, preferences) {
-    return apiClient.put(API_ENDPOINTS.USER_PREFERENCES(userId), { preferences });
-  },
+  // User preferences endpoints removed since preferences system was removed
 
   /**
    * Get user activity history
