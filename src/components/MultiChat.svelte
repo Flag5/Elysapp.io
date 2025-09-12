@@ -58,6 +58,12 @@
   }
 
   async function selectConversation(conversation) {
+    // Don't allow selecting placeholder conversations
+    if (conversation.isPlaceholder) {
+      logger.warn('Cannot select placeholder conversation:', conversation.id);
+      return;
+    }
+    
     // Clear current state first
     chatMessages = [];
     isLoading = true;
@@ -95,7 +101,18 @@
   }
 
   function startNewChat() {
-    selectedConversation = null;
+    // Create a placeholder conversation immediately
+    const placeholderConversation = {
+      id: `temp-${Date.now()}`, // Temporary ID
+      title: '...',
+      is_active: true,
+      message_count: 0,
+      created_at: new Date().toISOString(),
+      last_message_at: new Date().toISOString(),
+      isPlaceholder: true
+    };
+    
+    selectedConversation = placeholderConversation;
     chatMessages = [];
     addWelcomeMessage();
     userInput = '';
@@ -103,9 +120,17 @@
     // Set a flag to force new conversation on next message
     window.forceNewConversation = true;
     
-    // Force refresh of conversation list to show the new conversation will appear
-    // after the first message is sent
-    logger.debug('Starting new chat - cleared conversation state');
+    // Immediately add placeholder to conversation list for authenticated users
+    if (currentUser) {
+      setTimeout(() => {
+        const event = new CustomEvent('add-placeholder-conversation', {
+          detail: placeholderConversation
+        });
+        document.dispatchEvent(event);
+      }, 0);
+    }
+    
+    logger.debug('Starting new chat with placeholder conversation');
   }
 
   function addWelcomeMessage() {
@@ -175,29 +200,41 @@
       }
       
       // Send message with conversation ID if available and force_new flag
-      const data = await chatService.sendMessage(message, selectedConversation?.id, forceNew);
+      // Don't pass placeholder IDs to the backend
+      const conversationId = selectedConversation?.isPlaceholder ? null : selectedConversation?.id;
+      const data = await chatService.sendMessage(message, conversationId, forceNew);
       
       // Update selected conversation ID if this was a new chat
-      if (!selectedConversation && data.conversation_id) {
-        // Create a temporary conversation object
-        selectedConversation = {
+      if (selectedConversation?.isPlaceholder || (!selectedConversation && data.conversation_id)) {
+        const realConversation = {
           id: data.conversation_id,
           title: null,
           is_active: true,
           message_count: 2, // user + assistant message
           created_at: new Date().toISOString(),
-          last_message_at: new Date().toISOString()
+          last_message_at: new Date().toISOString(),
+          first_user_message: message
         };
         
-        // Trigger conversation list refresh for authenticated users
+        // Update selected conversation
+        const oldConversationId = selectedConversation?.id;
+        selectedConversation = realConversation;
+        
+        // Replace placeholder with real conversation in the list
         if (currentUser) {
-          // Force the ConversationList component to refresh by triggering a reactive update
           setTimeout(() => {
-            // This will cause the ConversationList to reload conversations
-            const conversationListComponent = document.querySelector('.conversation-list');
-            if (conversationListComponent) {
-              conversationListComponent.dispatchEvent(new CustomEvent('refresh-conversations'));
-            }
+            const event = new CustomEvent('replace-placeholder-conversation', {
+              detail: { 
+                oldId: oldConversationId,
+                newConversation: realConversation 
+              }
+            });
+            document.dispatchEvent(event);
+            
+            // Also trigger a refresh to get the updated conversation with proper title
+            setTimeout(() => {
+              document.dispatchEvent(new CustomEvent('refresh-conversations'));
+            }, 500);
           }, 100);
         }
       }

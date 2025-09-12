@@ -23,10 +23,29 @@
       setTimeout(() => loadConversations(), 500); // Small delay to ensure backend has processed
     };
     
+    // Listen for placeholder conversation events
+    const handleAddPlaceholder = (event) => {
+      const placeholderConversation = event.detail;
+      // Add placeholder at the beginning of the list
+      conversations = [placeholderConversation, ...conversations];
+    };
+    
+    const handleReplacePlaceholder = (event) => {
+      const { oldId, newConversation } = event.detail;
+      // Replace the placeholder with the real conversation
+      conversations = conversations.map(conv => 
+        conv.id === oldId ? newConversation : conv
+      );
+    };
+    
     document.addEventListener('refresh-conversations', handleRefresh);
+    document.addEventListener('add-placeholder-conversation', handleAddPlaceholder);
+    document.addEventListener('replace-placeholder-conversation', handleReplacePlaceholder);
     
     return () => {
       document.removeEventListener('refresh-conversations', handleRefresh);
+      document.removeEventListener('add-placeholder-conversation', handleAddPlaceholder);
+      document.removeEventListener('replace-placeholder-conversation', handleReplacePlaceholder);
     };
   });
 
@@ -69,6 +88,11 @@
   }
 
   function getConversationTitle(conversation) {
+    // Handle placeholder conversations
+    if (conversation.isPlaceholder) {
+      return '...';
+    }
+    
     // Use the generated title if available and conversation is postprocessed
     if (conversation.title && conversation.postprocessed) {
       return conversation.title;
@@ -95,6 +119,10 @@
   }
 
   function handleConversationClick(conversation) {
+    // Don't allow clicking on placeholder conversations
+    if (conversation.isPlaceholder) {
+      return;
+    }
     onConversationSelect(conversation);
   }
 
